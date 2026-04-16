@@ -24,18 +24,21 @@ with col2:
 start = datetime.combine(date, datetime.min.time())
 end = start + timedelta(days=1)
 
-url = f"https://transparency.apg.at/api/v1/AGPT/Data/German/{resolution}/{start.strftime('%Y-%m-%dT%H%M%S')}/{end.strftime('%Y-%m-%dT%H%M%S')}"
+# does not work on streamlit community cloud
+# url = f"https://transparency.apg.at/api/v1/AGPT/Data/German/{resolution}/{start.strftime('%Y-%m-%dT%H%M%S')}/{end.strftime('%Y-%m-%dT%H%M%S')}"
+url = f"https://qichenghua.eu.pythonanywhere.com/apg/transparency/api/v1/{resolution}/{start.strftime('%Y-%m-%d')}/{end.strftime('%Y-%m-%d')}"
 
 def fetch_data(url):
     r = requests.get(url)
     r.raise_for_status()
     return r.json()
 
-try:
-    data = fetch_data(url)
-except requests.RequestException as e:
-    st.error(f"Failed to fetch data: {e}")
-    st.stop()
+with st.spinner("Loading data..."):
+    try:
+        data = fetch_data(url)
+    except requests.RequestException as e:
+        st.error(f"Failed to fetch data: {e}")
+        st.stop()
 
 # handcrafted dictionaries
 mapping = {
